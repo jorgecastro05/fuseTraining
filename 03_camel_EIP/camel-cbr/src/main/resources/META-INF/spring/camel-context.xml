@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+  		  http://www.springframework.org/schema/beans/spring-beans.xsd
+  		http://camel.apache.org/schema/spring
+		  http://camel.apache.org/schema/spring/camel-spring.xsd">
+
+    <camelContext trace="false" xmlns="http://camel.apache.org/schema/spring">
+        <propertyPlaceholder id="endpoint-properties" location="classpath:cbr.properties" />
+        <!-- Package to be scanned -->
+        <package>com.redhat.gpe.training.camel</package>
+        <!-- Endpoints Definition -->
+        <endpoint uri="{{sourceDirectoryXmlUri}}" id="sourceDirectoryXml"/>
+        <endpoint uri="{{sourceDirectoryCsvUri}}" id="sourceDirectoryCsv"/>
+
+        <endpoint uri="{{euroSinkXmlUri}}" id="euroSinkXml"/>
+        <endpoint uri="{{usdSinkXmlUri}}" id="usdSinkXml"/>
+        <endpoint uri="{{otherSinkXmlUri}}" id="otherSinkXml"/>
+
+        <endpoint uri="{{euroSinkCsvUri}}" id="euroSinkCsv"/>
+        <endpoint uri="{{usdSinkCsvUri}}" id="usdSinkCsv"/>
+        <endpoint uri="{{otherSinkCsvUri}}" id="otherSinkCsv"/>
+
+    </camelContext>
+</beans>
