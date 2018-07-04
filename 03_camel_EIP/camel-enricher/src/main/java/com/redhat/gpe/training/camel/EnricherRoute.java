@@ -12,7 +12,14 @@ public class EnricherRoute extends RouteBuilder {
     private static SampleAggregator aggregationStrategy = new SampleAggregator();
 
 	public void configure() throws Exception {
-
+		from("timer:enrich?period=5s")
+				.setBody(constant("message"))
+                .log(">> Before enrichement my body is ${body}")
+                .enrich("direct:resource",aggregationStrategy)
+                .log(">> After enrichement. My body is ${body}");
+		from("direct:resource")
+                .setExchangePattern(ExchangePattern.InOut)
+                .transform(constant("blah"));
 	}
 
 }

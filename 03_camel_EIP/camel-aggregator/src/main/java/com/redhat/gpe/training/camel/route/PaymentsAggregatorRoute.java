@@ -9,8 +9,8 @@ import org.apache.camel.builder.xml.Namespaces;
 /**
  * This class defines a Camel Route that takes all files from a given directory
  * reads out their XML payments and splits them into single payments. Then it
- * will aggregate the individual payments into a new file ordered by the 
- * receiver of the payment within the given timeout period. 
+ * will aggregate the individual payments into a new file ordered by the
+ * receiver of the payment within the given timeout period.
  */
 public class PaymentsAggregatorRoute extends RouteBuilder {
 
@@ -23,12 +23,19 @@ public class PaymentsAggregatorRoute extends RouteBuilder {
     private int aggregateTimeoutPeriodInSeconds = 5;
 
     @Override
-	public void configure() throws Exception {
+    public void configure() throws Exception {
 
         // Define the namespace for the Payment XML
         Namespaces ns = new Namespaces("p", "http://training.gpe.redhat.com/payment")
                 .add("xsd", "http://www.w3.org/2001/XMLSchema");
 
-        from(sourceUri).to("ADD_SPLITTER_AND_AGGREGATOR").to(destinationUri);
+        from(sourceUri)
+                .split().xpath("/p:Payments/p:Payment", ns)
+                .convertBodyTo(String.class)
+                .aggregate(new BodyAppenderAggregator())
+                .xpath("/p:Payment/p:to", String.class, ns)
+                .completionTimeout(aggregateTimeoutPeriodInSeconds * 1000)
+                .log("\nGot aggregated contents with this content: \n${body}\n\n which is now being sent to the destination endpoint\n")
+                .to(destinationUri);
     }
 }
